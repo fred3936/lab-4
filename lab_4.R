@@ -34,7 +34,25 @@ gapminder %>%
   select(country, infant_mortality) %>% 
   knitr::kable()
 
+## Question 3. What is the general relationship between per-capita GDP and fertility rate?
+gapminder %>%
+  filter(year==2000) %>%
+  ggplot(aes(y=fertility, x=gdp/population)) +
+  geom_point() +
+  geom_smooth(se=F, method = "lm")
 
+## Question 4. If you break down the relationship between per-capita GDP and fertility rate by continent, which continent (or regions) stands out as an outlier? (Bonus question: why might this be?)
+gapminder %>%
+  filter(year==2000) %>%
+  ggplot(aes(y=fertility, x=gdp/population, color=continent)) +
+  geom_point() +
+  geom_smooth(se=F, method = "lm") +
+  facet_wrap(~continent, scales = "free_y")
 
-
-
+eu_2000 <- gapminder %>%
+  filter(year==2000, continent == "Europe") 
+eu_2000 %>%
+  filter(fertility > 1.5, gdp/population > 20000) %>%
+  ggplot(aes(y=fertility, x=gdp/population, color=region)) +
+  ggrepel::geom_label_repel(aes(label=country)) +
+  geom_point(data=eu_2000)
